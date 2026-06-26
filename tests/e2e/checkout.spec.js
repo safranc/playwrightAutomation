@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 const { login, logout } = require('./helpers');
-const checkoutData = require('../../../sathcypress/env.json');
+const checkoutData = require('../../env.json');
 
 test('logs in, adds first two items, checks out, and validates summary', async ({ page }) => {
   const checkoutUser = checkoutData.checkoutUsers.find(u => u.id === 'standard_user');
