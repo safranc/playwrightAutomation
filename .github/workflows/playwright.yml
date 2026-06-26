@@ -17,6 +17,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Debug repo contents
+        working-directory: .
+        run: |
+          pwd
+          echo "--- repo root listing ---"
+          ls -la
+          echo "--- playwright dir listing (if present) ---"
+          ls -la playwright || echo "playwright not found"
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
