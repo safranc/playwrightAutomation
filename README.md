@@ -82,4 +82,3 @@ In CI the typical steps are:
 3. Run the Playwright tests (`npx playwright test`)
 4. Upload the Playwright report as a workflow artifact
 
-If you prefer, I can also add a short `run-ci.ps1` helper or update the workflow to include matrix browsers or artifact retention settings.
