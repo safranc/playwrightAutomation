@@ -70,3 +70,16 @@ Notes:
 - To re-run a flaky test with videos/traces enabled, add Playwright configuration flags in `playwright.config.js` or run the test with `--trace on`.
 
 If you want, I can add a `run-tests.ps1` helper script or a GitHub Actions workflow to run these tests in CI.
+
+## CI Integration
+
+The Playwright test suite is executed automatically via GitHub Actions on every push to the repository. The workflow file is located at `.github/workflows/playwright.yml` and runs `npx playwright test` to execute the tests and publish the HTML report.
+
+In CI the typical steps are:
+
+1. Checkout the repository
+2. Install dependencies (`npm ci`)
+3. Run the Playwright tests (`npx playwright test`)
+4. Upload the Playwright report as a workflow artifact
+
+If you prefer, I can also add a short `run-ci.ps1` helper or update the workflow to include matrix browsers or artifact retention settings.
