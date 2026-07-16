@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { login, logout } = require('./helpers');
+const { login, logout } = require('../../function/helpers');
 
 test('logs in, adds all inventory items, resets app state, and verifies cart is cleared', async ({ page }) => {
   const username = 'standard_user';

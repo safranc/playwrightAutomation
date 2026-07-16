@@ -1,8 +1,8 @@
 const { test, expect } = require('@playwright/test');
-const { login } = require('./helpers');
+const { login } = require('../../function/helpers');
 
 test.describe('Sauce Demo - Login tests', () => {
-  const { readLocalCreds } = require('./helpers');
+  const { readLocalCreds } = require('../../function/helpers');
   const local = readLocalCreds();
   const usersEnv = process.env.PLAYWRIGHT_USERS || process.env.USERS || local.users || 'standard_user,locked_out_user';
   const users = usersEnv.split(',').map(u => u.trim()).filter(Boolean);

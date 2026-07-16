@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { login, logout } = require('./helpers');
+const { login, logout } = require('../../function/helpers');
 const checkoutData = require('../../env.json');
 
 test('logs in, adds first two items, checks out, and validates summary', async ({ page }) => {

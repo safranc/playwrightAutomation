@@ -1,5 +1,5 @@
 const { test, expect } = require('@playwright/test');
-const { login, logout } = require('./helpers');
+const { login, logout } = require('../../function/helpers');
 
 function isSortedAsc(arr) { return arr.every((v,i) => i === 0 || arr[i-1] <= v); }
 function isSortedDesc(arr) { return arr.every((v,i) => i === 0 || arr[i-1] >= v); }
