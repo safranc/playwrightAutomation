@@ -1,0 +1,49 @@
+name: OVS QA Upload E2E
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - OVS_qaTest/**
+      - .github/workflows/ovs-qa-upload-e2e.yml
+  pull_request:
+    paths:
+      - OVS_qaTest/**
+      - .github/workflows/ovs-qa-upload-e2e.yml
+
+jobs:
+  upload-resubmit-email-e2e:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: OVS_qaTest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: OVS_qaTest/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run OVS QA Playwright tests
+        run: npx playwright test --reporter=list
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ovs-qa-playwright-artifacts
+          path: |
+            OVS_qaTest/test-results/**
+            OVS_qaTest/playwright-report/**

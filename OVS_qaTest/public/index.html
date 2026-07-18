@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OVS QA Assignment Upload</title>
+    <style>
+      :root {
+        --bg: #f7f7f2;
+        --card: #fff;
+        --text: #1e2a2f;
+        --accent: #1f7a8c;
+        --accent-dark: #145666;
+        --border: #d4e1e4;
+      }
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: radial-gradient(circle at top right, #d4ecef, var(--bg) 45%);
+        color: var(--text);
+      }
+      .wrap {
+        max-width: 740px;
+        margin: 2rem auto;
+        padding: 1rem;
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.2rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      }
+      h1 {
+        margin-top: 0;
+      }
+      label {
+        display: block;
+        margin: 0.7rem 0 0.3rem;
+        font-weight: 600;
+      }
+      input, button {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0.65rem;
+        border-radius: 8px;
+        border: 1px solid #b6c8cd;
+      }
+      button {
+        margin-top: 1rem;
+        background: var(--accent);
+        color: #fff;
+        border: 0;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      button:hover {
+        background: var(--accent-dark);
+      }
+      .msg {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+      }
+      .ok {
+        background: #def7e4;
+        border: 1px solid #9ad9aa;
+      }
+      .err {
+        background: #fce3e3;
+        border: 1px solid #f2a5a5;
+      }
+      .submission {
+        margin-top: 1rem;
+        border-top: 1px dashed var(--border);
+        padding-top: 1rem;
+      }
+      .submission p {
+        margin: 0.35rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="card">
+        <h1>Assignment Submission</h1>
+        <p>Upload a file and resubmit anytime. Your latest file replaces the previous one.</p>
+
+        <form id="uploadForm">
+          <label for="studentId">Student ID</label>
+          <input id="studentId" name="studentId" required />
+
+          <label for="assignmentId">Assignment ID</label>
+          <input id="assignmentId" name="assignmentId" required />
+
+          <label for="studentEmail">Student Email</label>
+          <input id="studentEmail" name="studentEmail" type="email" required />
+
+          <label for="fileInput">Upload file (PDF, DOCX, JPG, PNG | max 10 MB)</label>
+          <input id="fileInput" name="file" type="file" required />
+
+          <button type="submit" id="submitBtn">Upload / Resubmit</button>
+        </form>
+
+        <div id="message" class="msg" style="display:none"></div>
+
+        <section class="submission" id="latestSubmission" style="display:none">
+          <h2>Latest Submission</h2>
+          <p><strong>Student:</strong> <span id="latestStudent"></span></p>
+          <p><strong>Assignment:</strong> <span id="latestAssignment"></span></p>
+          <p><strong>Original File:</strong> <span id="latestOriginalFile"></span></p>
+          <p><strong>Stored File (studentId + type):</strong> <span id="latestFile"></span></p>
+          <p><strong>Submitted At:</strong> <span id="latestTime"></span></p>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById('uploadForm');
+      const message = document.getElementById('message');
+      const latestSubmission = document.getElementById('latestSubmission');
+
+      function showMessage(text, isError) {
+        message.style.display = 'block';
+        message.className = `msg ${isError ? 'err' : 'ok'}`;
+        message.textContent = text;
+      }
+
+      function renderSubmission(submission) {
+        latestSubmission.style.display = 'block';
+        document.getElementById('latestStudent').textContent = submission.studentId;
+        document.getElementById('latestAssignment').textContent = submission.assignmentId;
+        document.getElementById('latestOriginalFile').textContent = submission.fileName;
+        document.getElementById('latestFile').textContent = submission.storedFileName;
+        document.getElementById('latestTime').textContent = new Date(submission.submittedAt).toLocaleString();
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const data = new FormData(form);
+        const studentId = data.get('studentId');
+        const assignmentId = data.get('assignmentId');
+
+        const response = await fetch('/api/submissions', {
+          method: 'POST',
+          body: data,
+        });
+
+        const payload = await response.json();
+
+        if (!response.ok) {
+          showMessage(payload.message || 'Upload failed.', true);
+          return;
+        }
+
+        showMessage(payload.message, false);
+        renderSubmission(payload.submission);
+
+        const refreshed = await fetch(`/api/submissions/${encodeURIComponent(studentId)}/${encodeURIComponent(assignmentId)}`);
+        if (refreshed.ok) {
+          const latest = await refreshed.json();
+          renderSubmission(latest.submission);
+        }
+      });
+    </script>
+  </body>
+</html>
